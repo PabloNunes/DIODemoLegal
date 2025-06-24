@@ -67,5 +67,58 @@ Para desenvolver novas funcionalidades:
 1. Clone o repositório
 2. Execute `dotnet restore` para restaurar dependências
 3. Execute `dotnet build` para compilar
-4. Execute `dotnet run --project Client` para iniciar o servidor de desenvolvimento
-5. Acesse `http://localhost:5192` no navegador
+4. Execute `dotnet test` para executar os testes
+5. Execute `dotnet run --project Client` para iniciar o servidor de desenvolvimento
+6. Acesse `http://localhost:5192` no navegador
+
+### Testes
+
+Este projeto inclui testes automatizados utilizando xUnit para garantir a qualidade do código:
+
+- **Testes de Unidade**: Cobertura dos serviços principais (PollService) e modelos de dados
+- **Framework**: xUnit com Moq para mocking
+- **Execução Local**: `dotnet test`
+- **CI/CD**: Testes executados automaticamente em cada push/PR
+
+#### Estrutura de Testes
+
+```
+BlazorBasic.Tests/
+├── Services/
+│   └── PollServiceTests.cs        # Testes do serviço de enquetes
+└── Models/
+    ├── PollOptionTests.cs         # Testes do modelo PollOption
+    └── PollDataTests.cs           # Testes do modelo PollData
+```
+
+#### Executando Testes
+
+```bash
+# Executar todos os testes
+dotnet test
+
+# Executar testes com relatório detalhado
+dotnet test --verbosity normal
+
+# Executar testes com cobertura de código
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+### CI/CD Pipeline
+
+O projeto utiliza GitHub Actions para automação de CI/CD:
+
+1. **Testes Automatizados**: Executados em cada push e pull request
+2. **Build e Deploy**: Deploy automático para Azure Static Web Apps após sucesso dos testes
+3. **Relatórios de Teste**: Resultados visíveis diretamente no GitHub
+
+#### Pipeline de CI/CD
+
+- **Etapa 1**: Checkout do código
+- **Etapa 2**: Setup do .NET 8
+- **Etapa 3**: Restauração de dependências (`dotnet restore`)
+- **Etapa 4**: Build do projeto (`dotnet build`)
+- **Etapa 5**: Execução dos testes (`dotnet test`)
+- **Etapa 6**: Deploy para Azure (somente se testes passarem)
+
+Os testes devem passar obrigatoriamente para que o deploy seja realizado.
