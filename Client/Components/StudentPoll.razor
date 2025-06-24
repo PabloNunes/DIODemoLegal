@@ -1,0 +1,139 @@
+@using BlazorBasic.Models
+@using BlazorBasic.Services
+@inject PollService PollService
+
+<div class="student-poll">
+    <div class="poll-header">
+        <h3 class="poll-title">🗳️ Enquete Estudantil</h3>
+        <p class="poll-subtitle">Vote no seu tema favorito para as próximas aulas!</p>
+    </div>
+
+    @if (!hasVoted)
+    {
+        <div class="poll-voting">
+            <h4 class="voting-title">Escolha uma opção:</h4>
+            <div class="poll-options">
+                @foreach (var option in pollOptions)
+                {
+                    <div class="poll-option">
+                        <button class="btn btn-outline-primary poll-button" 
+                                @onclick="() => VoteAsync(option.Id)"
+                                disabled="@isVoting">
+                            <div class="option-content">
+                                <strong>@option.Title</strong>
+                                <small class="option-description">@option.Description</small>
+                            </div>
+                        </button>
+                    </div>
+                }
+            </div>
+            @if (isVoting)
+            {
+                <div class="voting-feedback">
+                    <small class="text-muted">Registrando seu voto...</small>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="poll-voted">
+            <div class="alert alert-success" role="alert">
+                <strong>✅ Obrigado pelo seu voto!</strong>
+                <p class="mb-0">Você já participou desta enquete.</p>
+            </div>
+        </div>
+    }
+
+    <div class="poll-results">
+        <h4 class="results-title">📊 Resultados Atuais</h4>
+        <div class="results-summary">
+            <small class="text-muted">Total de votos: @totalVotes</small>
+        </div>
+        
+        <div class="results-list">
+            @foreach (var option in pollOptions.OrderByDescending(o => o.VoteCount))
+            {
+                var percentage = totalVotes > 0 ? (option.VoteCount * 100.0 / totalVotes) : 0;
+                var isUserVote = hasVoted && votedOptionId == option.Id;
+                
+                <div class="result-item @(isUserVote ? "user-voted" : "")">
+                    <div class="result-header">
+                        <span class="result-title">
+                            @if (isUserVote) { <span class="user-vote-indicator">👤</span> }
+                            @option.Title
+                        </span>
+                        <span class="result-stats">
+                            @option.VoteCount votos (@percentage.ToString("F1")%)
+                        </span>
+                    </div>
+                    <div class="progress result-progress">
+                        <div class="progress-bar @(isUserVote ? "bg-success" : "bg-primary")" 
+                             style="width: @percentage.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)%">
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<PollOption> pollOptions = new();
+    private bool hasVoted = false;
+    private bool isVoting = false;
+    private int totalVotes = 0;
+    private string? votedOptionId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPollDataAsync();
+    }
+
+    private async Task LoadPollDataAsync()
+    {
+        try
+        {
+            pollOptions = await PollService.GetResultsAsync();
+            hasVoted = await PollService.HasVotedAsync();
+            totalVotes = await PollService.GetTotalVotesAsync();
+            
+            if (hasVoted)
+            {
+                var pollData = await PollService.GetPollDataAsync();
+                votedOptionId = pollData.VotedOptionId;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar dados da enquete: {ex.Message}");
+        }
+    }
+
+    private async Task VoteAsync(string optionId)
+    {
+        if (hasVoted || isVoting)
+            return;
+
+        isVoting = true;
+        StateHasChanged();
+
+        try
+        {
+            var success = await PollService.VoteAsync(optionId);
+            if (success)
+            {
+                await LoadPollDataAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao votar: {ex.Message}");
+        }
+        finally
+        {
+            isVoting = false;
+            StateHasChanged();
+        }
+    }
+}
