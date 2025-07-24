@@ -22,7 +22,7 @@ namespace BlazorBasic.Tests.Services
         public async Task GetPollDataAsync_WhenNoDataInLocalStorage_ReturnsInitialPollData()
         {
             // Arrange
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync((string?)null);
 
             // Act
@@ -53,7 +53,7 @@ namespace BlazorBasic.Tests.Services
             };
             var json = JsonSerializer.Serialize(storedPollData);
             
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync(json);
 
             // Act
@@ -82,7 +82,7 @@ namespace BlazorBasic.Tests.Services
             };
             var json = JsonSerializer.Serialize(pollData);
             
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync(json);
 
             // Act
@@ -96,7 +96,7 @@ namespace BlazorBasic.Tests.Services
         public async Task HasVotedAsync_WhenNotVoted_ReturnsFalse()
         {
             // Arrange
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync((string?)null);
 
             // Act
@@ -117,7 +117,7 @@ namespace BlazorBasic.Tests.Services
             };
             var json = JsonSerializer.Serialize(pollData);
             
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync(json);
 
             // Act
@@ -131,7 +131,7 @@ namespace BlazorBasic.Tests.Services
         public async Task GetResultsAsync_ReturnsAllPollOptions()
         {
             // Arrange
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync((string?)null);
 
             // Act
@@ -160,7 +160,7 @@ namespace BlazorBasic.Tests.Services
             };
             var json = JsonSerializer.Serialize(pollData);
             
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync(json);
 
             // Act
@@ -174,7 +174,7 @@ namespace BlazorBasic.Tests.Services
         public async Task GetTotalVotesAsync_WhenNoVotes_ReturnsZero()
         {
             // Arrange
-            _mockJSRuntime.Setup(js => js.InvokeAsync<string>("localStorage.getItem", It.IsAny<object[]>()))
+            _mockJSRuntime.Setup(js => js.InvokeAsync<string?>("localStorage.getItem", It.IsAny<object[]>()))
                 .ReturnsAsync((string?)null);
 
             // Act
